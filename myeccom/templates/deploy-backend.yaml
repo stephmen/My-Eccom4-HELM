@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend
+  namespace: {{ .Values.project.namespace }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - command:
+            - /bin/sh
+            - -c
+            - npm run deploy
+          envFrom:
+            - configMapRef:
+                name: env-backend
+          image: stephmen/docker-ecom-backendk8:tag9
+          imagePullPolicy: IfNotPresent
+          name: docker-ecom-backend-init
+          ports:
+            - containerPort: 4444
+              protocol: TCP
+          resources: {}
+      containers:
+        - command:
+            - /bin/sh
+            - -c
+            - npm run dev
+          envFrom:
+            - configMapRef:
+                name: env-backend
+          image: stephmen/docker-ecom-backendk8:tag9
+          imagePullPolicy: IfNotPresent
+          name: docker-ecom-backend
+          ports:
+            - containerPort: 4444
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      imagePullSecrets:
+        - name: regcred        
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
