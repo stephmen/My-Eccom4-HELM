@@ -24,14 +24,14 @@ spec:
         app: frontend
     spec:
       containers:
-        - command:
-            - /bin/sh
-            - -c
-            - npm run dev
-          envFrom:
+        # - command:
+        #     - /bin/sh
+        #     - -c
+        #     - npm run dev
+        - envFrom:
             - configMapRef:
                 name: env-frontend
-          image: stephmen/docker-ecom-front:tag1
+          image: stephmen/docker-ecom-front-ocp-x86:latest
           imagePullPolicy: IfNotPresent
           name: docker-ecom-frontend
           ports:
