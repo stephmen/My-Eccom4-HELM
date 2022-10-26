@@ -27,7 +27,7 @@ spec:
         # - command:
         #     - /bin/sh
         #     - -c
-        #     - npm run dev
+        #     - npm run build
         - envFrom:
             - configMapRef:
                 name: env-frontend
